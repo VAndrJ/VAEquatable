@@ -13,7 +13,7 @@
 ### @Equatable
 
 
-Adds an extension with the `==` function and `Equatable` conformance.
+Adds an extension with the static `==` function and `Equatable` conformance if needed.
 
 
 Example 1:
