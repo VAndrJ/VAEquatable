@@ -23,11 +23,8 @@ public extension VariableDeclSyntax {
     var isClass: Bool { modifiers.contains { $0.name.tokenKind == classKeyword } }
     var isInstance: Bool { !(isClass || isStatic) }
     func getIsStored(orComputed: Bool) throws -> Bool {
-        guard isInstance else {
+        guard isInstance, let binding = bindings.first else {
             return false
-        }
-        guard bindings.count == 1, let binding = bindings.first else {
-            throw VAEquatableError.multipleBindings
         }
 
         switch binding.accessorBlock?.accessors {
@@ -54,15 +51,26 @@ public extension VariableDeclSyntax {
             return true
         }
     }
-    var name: String? {
-        guard bindings.count == 1,
-              let binding = bindings.first,
-              let name = binding.pattern.as(IdentifierPatternSyntax.self)?.identifier.text else {
-            return nil
+    var names: [String] {
+        var names: [String] = []
+        for binding in bindings {
+            if let name = binding.pattern.name {
+                names.append(name)
+            } else if let elements = binding.pattern.as(TuplePatternSyntax.self)?.elements {
+                names.append(contentsOf: elements.compactMap(\.pattern.name))
+            }
         }
 
-        return name
+        return names
     }
+}
+
+extension PatternSyntax {
+    var name: String? { self.as(IdentifierPatternSyntax.self)?.identifier.text }
+}
+
+extension String {
+    static let equatable = "Equatable"
 }
 
 extension LabeledExprListSyntax {

@@ -347,5 +347,73 @@ extension VAEquatableTests {
             macros: testMacros
         )
     }
+
+    func test_class_property_multiple_bindings() throws {
+        assertMacroExpansion(
+            """
+            @Equatable
+            class SomeClass {
+                let a, b: Int
+
+                init(a: Int, b: Int) {
+                    self.a = a
+                    self.b = b
+                }
+            }
+            """,
+            expandedSource: """
+            class SomeClass {
+                let a, b: Int
+
+                init(a: Int, b: Int) {
+                    self.a = a
+                    self.b = b
+                }
+            }
+
+            extension SomeClass: Equatable {
+                static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
+                    lhs.a == rhs.a &&
+                    lhs.b == rhs.b
+                }
+            }
+            """,
+            macros: testMacros
+        )
+    }
+
+    func test_class_property_tuple_bindings() throws {
+        assertMacroExpansion(
+            """
+            @Equatable
+            class SomeClass {
+                let (a, b): (Int, Bool)
+
+                init(a: Int, b: Bool) {
+                    self.a = a
+                    self.b = b
+                }
+            }
+            """,
+            expandedSource: """
+            class SomeClass {
+                let (a, b): (Int, Bool)
+
+                init(a: Int, b: Bool) {
+                    self.a = a
+                    self.b = b
+                }
+            }
+
+            extension SomeClass: Equatable {
+                static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
+                    lhs.a == rhs.a &&
+                    lhs.b == rhs.b
+                }
+            }
+            """,
+            macros: testMacros
+        )
+    }
 }
 #endif

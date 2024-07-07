@@ -92,3 +92,40 @@ let value13 = SomeClass4()
 let value14 = SomeClass4()
 
 assert(value13 == value14)
+
+
+@Equatable
+class SomeClass5 {
+    let (a, b): (Int, Bool)
+
+    init(a: Int, b: Bool) {
+        (self.a, self.b) = (a, b)
+    }
+}
+
+let value15 = SomeClass5(a: 1, b: false)
+let value16 = SomeClass5(a: 1, b: true)
+let value17 = SomeClass5(a: 2, b: true)
+let value18 = SomeClass5(a: 1, b: false)
+
+assert(value15 != value16)
+assert(value15 != value17)
+assert(value15 == value18)
+
+
+@Equatable
+class SomeClass6 {
+    var a, b: Int
+
+    init(a: Int, b: Int) {
+        self.a = a
+        self.b = b
+    }
+}
+
+let value19 = SomeClass6(a: 1, b: 1)
+let value20 = SomeClass6(a: 1, b: 2)
+let value21 = SomeClass6(a: 1, b: 1)
+
+assert(value19 != value20)
+assert(value19 == value21)
