@@ -20,7 +20,7 @@ public struct VAEquatableMacro: ExtensionMacro {
 
         let withComputed = node.arguments?.as(LabeledExprListSyntax.self)?.withComputedParam ?? false
         let storedProperties = try declaration.getProperties(withComputed: withComputed, isPublic: declaration.modifiers.isPublic)
-        let properties = storedProperties.compactMap(\.name)
+        let properties: [String] = storedProperties.compactMap(\.name)
         let isAlreadyEquatable = declaration.inheritanceClause?.inheritedTypes.contains(where: { $0.trimmedDescription == "Equatable" }) ?? false
 
         return [
