@@ -13,5 +13,6 @@ struct VAEquatablePlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         VAEquatableMacro.self,
         VAEquatableIgnoredMacro.self,
+        VAEquatableUniqueMacro.self,
     ]
 }

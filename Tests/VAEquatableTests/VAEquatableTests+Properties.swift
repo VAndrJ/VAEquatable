@@ -71,10 +71,16 @@ extension VAEquatableTests {
             class SomeClass {
                 var a: Int
                 let b: Bool
+                let (c, d): (String, Double)
+                let e, f: UInt8
 
-                init(a: Int, b: Bool) {
+                init(a: Int, b: Bool, c: String, d: Double, e: UInt8, f: UInt8) {
                     self.a = a
                     self.b = b
+                    self.c = c
+                    self.d = d
+                    self.e = e
+                    self.f = f
                 }
             }
             """,
@@ -82,17 +88,27 @@ extension VAEquatableTests {
             class SomeClass {
                 var a: Int
                 let b: Bool
+                let (c, d): (String, Double)
+                let e, f: UInt8
 
-                init(a: Int, b: Bool) {
+                init(a: Int, b: Bool, c: String, d: Double, e: UInt8, f: UInt8) {
                     self.a = a
                     self.b = b
+                    self.c = c
+                    self.d = d
+                    self.e = e
+                    self.f = f
                 }
             }
 
             extension SomeClass: Equatable {
                 static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
                     lhs.a == rhs.a &&
-                    lhs.b == rhs.b
+                    lhs.b == rhs.b &&
+                    lhs.c == rhs.c &&
+                    lhs.d == rhs.d &&
+                    lhs.e == rhs.e &&
+                    lhs.f == rhs.f
                 }
             }
             """,
@@ -409,6 +425,42 @@ extension VAEquatableTests {
                 static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
                     lhs.a == rhs.a &&
                     lhs.b == rhs.b
+                }
+            }
+            """,
+            macros: testMacros
+        )
+    }
+
+    func test_class_property_unique() throws {
+        assertMacroExpansion(
+            """
+            @Equatable
+            class SomeClass {
+                @EquatableUnique
+                let a: Int
+                let b: Int
+
+                init(a: Int, b: Int) {
+                    self.a = a
+                    self.b = b
+                }
+            }
+            """,
+            expandedSource: """
+            class SomeClass {
+                let a: Int
+                let b: Int
+
+                init(a: Int, b: Int) {
+                    self.a = a
+                    self.b = b
+                }
+            }
+
+            extension SomeClass: Equatable {
+                static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
+                    lhs.a == rhs.a
                 }
             }
             """,

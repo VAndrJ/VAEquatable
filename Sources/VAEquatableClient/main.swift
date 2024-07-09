@@ -129,3 +129,25 @@ let value21 = SomeClass6(a: 1, b: 1)
 
 assert(value19 != value20)
 assert(value19 == value21)
+
+
+@Equatable
+class SomeClass7 {
+    @EquatableUnique
+    var id: String
+    var a, b: Int
+
+    init(id: String, a: Int, b: Int) {
+        self.id = id
+        self.a = a
+        self.b = b
+    }
+}
+
+let value22 = SomeClass7(id: "id1", a: 1, b: 1)
+let value23 = SomeClass7(id: "id2", a: 2, b: 2)
+let value24 = SomeClass7(id: "id1", a: 3, b: 3)
+
+assert(value22 != value23)
+assert(value22 == value24)
+

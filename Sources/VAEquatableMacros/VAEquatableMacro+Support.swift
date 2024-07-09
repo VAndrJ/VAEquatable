@@ -106,8 +106,21 @@ public extension DeclGroupSyntax {
     }
 }
 
+extension [VariableDeclSyntax] {
+
+    var names: [String] {
+        let unique = filter { $0.attributes.isUnique }
+        if unique.isEmpty {
+            return flatMap(\.names)
+        } else {
+            return unique.flatMap(\.names)
+        }
+    }
+}
+
 extension AttributeListSyntax {
     var isIgnored: Bool { contains(where: { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == "EquatableIgnored" }) }
+    var isUnique: Bool { contains(where: { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == "EquatableUnique" }) }
 }
 
 public extension DeclModifierListSyntax {

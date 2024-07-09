@@ -7,6 +7,7 @@ import VAEquatableMacros
 let testMacros: [String: Macro.Type] = [
     "Equatable": VAEquatableMacro.self,
     "EquatableIgnored": VAEquatableIgnoredMacro.self,
+    "EquatableUnique": VAEquatableUniqueMacro.self,
 ]
 #endif
 

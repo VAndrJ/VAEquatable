@@ -31,3 +31,6 @@ public macro Equatable(withComputed: Bool = false) = #externalMacro(module: "VAE
 /// Macro to mark a field as ignored for the `@Equatable` macro.
 @attached(peer)
 public macro EquatableIgnored() = #externalMacro(module: "VAEquatableMacros", type: "VAEquatableIgnoredMacro")
+/// Macro to mark a field as unique to use for the `@Equatable` macro.
+@attached(peer)
+public macro EquatableUnique() = #externalMacro(module: "VAEquatableMacros", type: "VAEquatableUniqueMacro")

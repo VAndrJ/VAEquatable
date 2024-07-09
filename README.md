@@ -103,7 +103,6 @@ class SomeClass {
 
 class SomeClass {
     var a: Int
-    @EquatableIgnored
     var b: Bool
     var c: Bool { true }
 
@@ -148,7 +147,6 @@ class SomeClass {
 
 class SomeClass {
     var a: Int
-    @EquatableIgnored
     var b: Bool
     var c: String {
         get { _c }
@@ -192,10 +190,42 @@ extension SomeClass: Equatable {
 ```
 
 
-## TBD
+Example 6:
 
 
-- Id only.
+```swift
+@Equatable
+class SomeClass {
+    @EquatableUnique
+    var id: String
+    var a, b: Int
+
+    init(id: String, a: Int, b: Int) {
+        self.id = id
+        self.a = a
+        self.b = b
+    }
+}
+
+// expands to
+
+class SomeClass {
+    var id: String
+    var a, b: Int
+
+    init(id: String, a: Int, b: Int) {
+        self.id = id
+        self.a = a
+        self.b = b
+    }
+}
+
+extension SomeClass: Equatable {
+    static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+```
 
 
 ## Author
