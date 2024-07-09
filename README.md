@@ -192,6 +192,12 @@ extension SomeClass: Equatable {
 ```
 
 
+## TBD
+
+
+- Id only.
+
+
 ## Author
 
 
