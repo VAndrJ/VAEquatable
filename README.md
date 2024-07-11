@@ -228,6 +228,47 @@ extension SomeClass: Equatable {
 ```
 
 
+### @Hashable
+
+
+Adds an extension with the `hash(into:)` function and `Hashable` conformance if needed.
+
+
+```swift
+@Hashable
+@Equatable
+class SomeClass {
+    var a: Int
+
+    init(a: Int) {
+        self.a = a
+    }
+}
+
+// expands to
+
+class SomeClass {
+    var a: Int
+
+    init(a: Int) {
+        self.a = a
+    }
+}
+
+extension SomeClass: Equatable {
+    static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
+        lhs.a == rhs.a
+    }
+}
+
+extension SomeClass: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(a)
+    }
+}
+```
+
+
 ## Author
 
 

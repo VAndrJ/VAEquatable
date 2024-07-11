@@ -13,8 +13,6 @@ private let staticKeyword: TokenKind = .keyword(.static)
 private let classKeyword: TokenKind = .keyword(.class)
 private let willSetKeyword: TokenKind = .keyword(.willSet)
 private let didSetKeyword: TokenKind = .keyword(.didSet)
-private let getKeyword: TokenKind = .keyword(.get)
-private let setKeyword: TokenKind = .keyword(.set)
 
 public extension VariableDeclSyntax {
     var isPublic: Bool { modifiers.contains { $0.name.tokenKind == publicKeyword } }
@@ -33,14 +31,12 @@ public extension VariableDeclSyntax {
                 switch accessor.accessorSpecifier.tokenKind {
                 case willSetKeyword, didSetKeyword:
                     continue
-                case getKeyword, setKeyword:
+                default:
                     if orComputed {
                         continue
                     } else {
                         return false
                     }
-                default:
-                    return false
                 }
             }
 
@@ -71,15 +67,12 @@ extension PatternSyntax {
 
 extension String {
     static let equatable = "Equatable"
+    static let hashable = "Hashable"
 }
 
 extension LabeledExprListSyntax {
     var withComputedParam: Bool {
-        guard let withComputed = getLabeledExprSyntax("withComputed")?.expression.as(BooleanLiteralExprSyntax.self)?.literal.text else {
-            return false
-        }
-        
-        return withComputed == "true"
+        getLabeledExprSyntax("withComputed")?.expression.as(BooleanLiteralExprSyntax.self)?.literal.text == "true"
     }
 
     private func getLabeledExprSyntax(_ text: String) -> LabeledExprSyntax? {
@@ -89,7 +82,7 @@ extension LabeledExprListSyntax {
 
 public extension DeclGroupSyntax {
 
-    func getProperties(withComputed: Bool, isPublic: Bool) throws -> [VariableDeclSyntax] {
+    func getEquatableProperties(withComputed: Bool, isPublic: Bool) throws -> [VariableDeclSyntax] {
         try memberBlock.members.compactMap { member -> VariableDeclSyntax? in
             guard let variable = member.decl.as(VariableDeclSyntax.self),
                   !variable.isPrivate,
@@ -97,7 +90,23 @@ public extension DeclGroupSyntax {
                   try variable.getIsStored(orComputed: withComputed) else {
                 return nil
             }
-            guard !variable.attributes.isIgnored else {
+            guard !variable.attributes.isEquatableIgnored else {
+                return nil
+            }
+
+            return variable
+        }
+    }
+
+    func getHashableProperties(withComputed: Bool, isPublic: Bool) throws -> [VariableDeclSyntax] {
+        try memberBlock.members.compactMap { member -> VariableDeclSyntax? in
+            guard let variable = member.decl.as(VariableDeclSyntax.self),
+                  !variable.isPrivate,
+                  isPublic && variable.isPublic || !isPublic,
+                  try variable.getIsStored(orComputed: withComputed) else {
+                return nil
+            }
+            guard !variable.attributes.isHashableIgnored else {
                 return nil
             }
 
@@ -107,9 +116,16 @@ public extension DeclGroupSyntax {
 }
 
 extension [VariableDeclSyntax] {
-
-    var names: [String] {
-        let unique = filter { $0.attributes.isUnique }
+    var equatableNames: [String] {
+        let unique = filter { $0.attributes.isEquatableUnique }
+        if unique.isEmpty {
+            return flatMap(\.names)
+        } else {
+            return unique.flatMap(\.names)
+        }
+    }
+    var hashableNames: [String] {
+        let unique = filter { $0.attributes.isHashableUnique }
         if unique.isEmpty {
             return flatMap(\.names)
         } else {
@@ -119,8 +135,10 @@ extension [VariableDeclSyntax] {
 }
 
 extension AttributeListSyntax {
-    var isIgnored: Bool { contains(where: { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == "EquatableIgnored" }) }
-    var isUnique: Bool { contains(where: { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == "EquatableUnique" }) }
+    var isEquatableIgnored: Bool { contains(where: { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == "EquatableIgnored" }) }
+    var isEquatableUnique: Bool { contains(where: { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == "EquatableUnique" }) }
+    var isHashableIgnored: Bool { contains(where: { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == "HashableIgnored" }) }
+    var isHashableUnique: Bool { contains(where: { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == "HashableUnique" }) }
 }
 
 public extension DeclModifierListSyntax {

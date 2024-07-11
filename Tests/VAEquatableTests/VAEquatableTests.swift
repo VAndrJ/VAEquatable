@@ -1,14 +1,16 @@
+#if canImport(VAEquatableMacros)
 import SwiftSyntaxMacros
 import XCTest
-
-#if canImport(VAEquatableMacros)
 import VAEquatableMacros
 
 let testMacros: [String: Macro.Type] = [
     "Equatable": VAEquatableMacro.self,
     "EquatableIgnored": VAEquatableIgnoredMacro.self,
     "EquatableUnique": VAEquatableUniqueMacro.self,
+    "Hashable": VAHashableMacro.self,
+    "HashableIgnored": VAHashableIgnoredMacro.self,
+    "HashableUnique": VAHashableUniqueMacro.self,
 ]
-#endif
 
 final class VAEquatableTests: XCTestCase {}
+#endif

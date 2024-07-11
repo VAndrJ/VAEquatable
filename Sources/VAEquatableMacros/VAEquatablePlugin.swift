@@ -14,5 +14,8 @@ struct VAEquatablePlugin: CompilerPlugin {
         VAEquatableMacro.self,
         VAEquatableIgnoredMacro.self,
         VAEquatableUniqueMacro.self,
+        VAHashableMacro.self,
+        VAHashableIgnoredMacro.self,
+        VAHashableUniqueMacro.self,
     ]
 }
