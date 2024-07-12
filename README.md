@@ -10,6 +10,14 @@
 [![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20watchOS%20%7C%20tvOS%20%7C%20macOS%20%7C%20macCatalyst-lightgray.svg?style=flat)](https://developer.apple.com/discover)
 
 
+* [Equatable](#equatable)
+    * [EquatableIgnored](#equatableignored)
+    * [EquatableUnique](#equatableunique)
+* [Hashable](#hashable)
+    * [HashableIgnored](#hashableignored)
+    * [HashableUnique](#hashableunique)
+
+
 ### @Equatable
 
 
@@ -87,6 +95,31 @@ Example 3:
 
 ```swift
 @Equatable
+class SomeClass {}
+
+// expands to
+
+class SomeClass {}
+
+extension SomeClass: Equatable {
+    static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
+        true
+    }
+}
+```
+
+
+#### @EquatableIgnored
+
+
+Macro to mark a field as ignored for the `@Equatable` macro.
+
+
+Example 1:
+
+
+```swift
+@Equatable
 class SomeClass {
     var a: Int
     @EquatableIgnored
@@ -120,7 +153,7 @@ extension SomeClass: Equatable {
 ```
 
 
-Example 4:
+Example 2:
 
 
 ```swift
@@ -171,26 +204,13 @@ extension SomeClass: Equatable {
 ```
 
 
-Example 5:
+#### @EquatableUnique
 
 
-```swift
-@Equatable
-class SomeClass {}
-
-// expands to
-
-class SomeClass {}
-
-extension SomeClass: Equatable {
-    static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
-        true
-    }
-}
-```
+Macro to mark a field as unique to use for the `@Equatable` macro.
 
 
-Example 6:
+Example:
 
 
 ```swift
@@ -234,6 +254,9 @@ extension SomeClass: Equatable {
 Adds an extension with the `hash(into:)` function and `Hashable` conformance if needed.
 
 
+Example:
+
+
 ```swift
 @Hashable
 @Equatable
@@ -252,6 +275,106 @@ class SomeClass {
 
     init(a: Int) {
         self.a = a
+    }
+}
+
+extension SomeClass: Equatable {
+    static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
+        lhs.a == rhs.a
+    }
+}
+
+extension SomeClass: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(a)
+    }
+}
+```
+
+
+#### @HashableIgnored
+
+
+Macro to mark a field as ignored for the `@Hashable` macro.
+
+
+#Example:
+
+
+```swift
+@Hashable
+@Equatable
+class SomeClass {
+    @HashableIgnored
+    @EquatableIgnored
+    var a: Int
+    var b: Int
+
+    init(a: Int, b: Int) {
+        self.a = a
+        self.b = b
+    }
+}
+
+// expands to
+
+class SomeClass {
+    var a: Int
+    var b: Int
+
+    init(a: Int, b: Int) {
+        self.a = a
+        self.b = b
+    }
+}
+
+extension SomeClass: Equatable {
+    static func ==(lhs: SomeClass, rhs: SomeClass) -> Bool {
+        lhs.b == rhs.b
+    }
+}
+
+extension SomeClass: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(b)
+    }
+}
+```
+
+
+#### @HashableUnique
+
+
+Macro to mark a field as unique to use for the `@Hashable` macro.
+
+
+Example:
+
+
+```swift
+@Hashable
+@Equatable
+class SomeClass {
+    @HashableUnique
+    @EquatableUnique
+    var a: Int
+    var b: Int
+
+    init(a: Int, b: Int) {
+        self.a = a
+        self.b = b
+    }
+}
+
+// expands to
+
+class SomeClass {
+    var a: Int
+    var b: Int
+
+    init(a: Int, b: Int) {
+        self.a = a
+        self.b = b
     }
 }
 
